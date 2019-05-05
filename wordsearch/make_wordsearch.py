@@ -1,8 +1,9 @@
 import numpy
-from random import randint
+from random import randint, choice
 
 
 MAX_PLACEMENT_ATTEMPTS = 10
+
 
 class PlacementError(Exception):
     pass
@@ -10,7 +11,7 @@ class PlacementError(Exception):
 
 def get_standard_placement(word, field_width, field_height):
     word_length = len(word)
-    placement =  numpy.full((field_height, field_width), None)
+    placement = numpy.full((field_height, field_width), None)
     row = randint(0, field_height - 1)
     max_start_column = field_width - word_length
     start_column = randint(0, max_start_column) if max_start_column else 0
@@ -22,18 +23,15 @@ def get_reversed_placement(word, field_width, field_height):
     reversed_word = "".join(reversed(word))
     return get_standard_placement(reversed_word, field_width, field_height)
 
+
 def get_vertical_placement(word, field_width, field_height):
-    word_length = len(word)
-    placement = numpy.full((field_height, field_width), None)
-    column = randint(0, field_width - 1)
-    max_start_row = field_height - word_length
-    start_row = randint(0, max_start_row) if max_start_row else 0
-    placement[start_row:start_row + word_length, column] = [*word]
-    return placement
+    placement = get_standard_placement(word, field_height, field_width)
+    return placement.T
+
 
 def get_reversed_vertical_placement(word, field_width, field_height):
-    reversed_word = "".join(reversed(word))
-    return get_vertical_placement(reversed_word, field_width, field_height)
+    placement = get_reversed_placement(word, field_height, field_width)
+    return placement.T
 
 
 PLACEMENT_FUNCTIONS = [
@@ -42,11 +40,12 @@ PLACEMENT_FUNCTIONS = [
     get_vertical_placement,
     get_reversed_vertical_placement
 ]
-NUM_PLACEMENT_FUNCTIONS = len(PLACEMENT_FUNCTIONS)
+
 
 def get_placement(word, field_width, field_height):
-    placement_function = PLACEMENT_FUNCTIONS[randint(0, NUM_PLACEMENT_FUNCTIONS - 1)]
+    placement_function = choice(PLACEMENT_FUNCTIONS)
     return placement_function(word, field_width, field_height)
+
 
 def placement_is_valid(placement, field):
     placement_bool = placement.astype(bool)
@@ -54,6 +53,7 @@ def placement_is_valid(placement, field):
     overlaps = placement_bool & field_bool
     allowed_overlaps = placement == field
     return allowed_overlaps[numpy.where(overlaps)].all()
+
 
 def validate_word_and_field(word, field_width, field_height):
     word_length = len(word)
@@ -79,12 +79,12 @@ def place_word(word, field):
     field[word_coords] = placement[word_coords]
     return field
 
+
 def fill_field(field, characters):
     background = numpy.random.choice([*characters], field.shape)
     null_field_coords = numpy.where(~field.astype(bool))
     field[null_field_coords] = background[null_field_coords]
     return field
-
 
 
 class Wordsearch:
@@ -116,8 +116,3 @@ class Wordsearch:
         for row in [self._row_as_string(row) for row in self.field]:
             lines.extend([row, row_border])
         return "\n".join(lines)
-
-
-w = Wordsearch(["foo", "bar"], 10, 10)
-print(w.as_string())
-
