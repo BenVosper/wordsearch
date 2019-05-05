@@ -1,5 +1,6 @@
 import numpy
-from random import randint, choice
+
+from numpy.random import randint, choice
 
 
 def get_standard_placement(word, field_width, field_height):
