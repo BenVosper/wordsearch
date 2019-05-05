@@ -1,0 +1,48 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "dev-requirements.txt" }}
+
+      - run:
+          name: Create virtual-environment
+          command: python3 -m venv venv
+
+      - run:
+          name: Install Package
+          command: |
+            . venv/bin/activate
+            pip install -e .
+
+      - run:
+          name: Install Development Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r dev-requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "dev-requirements.txt" }}
+
+      - run:
+          name: Make test results directory
+          command: mkdir -p test-results/pytest
+
+      - run:
+          name: Test
+          command: |
+            . venv/bin/activate
+            pytest -v --junitxml=test-results/pytest/results.xml
+
+      - store_test_results:
+          path: test-results
