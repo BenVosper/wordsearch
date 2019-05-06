@@ -1,5 +1,29 @@
 ## `wordsearch`
 
+Simple wordsearch generator using numpy.
+
+#### Usage
+
+```python
+from wordsearch.wordsearch import Wordsearch
+
+my_wordsearch = Wordsearch(
+    words=["HIDE", "THESE", "WORDS", "FOR", "ME"],
+    width=10,
+    height=8
+)
+
+print(my_wordsearch.as_string())
+```
+
+If you encounter a `PlacementError`, try using fewer words or larger dimensions.
+
+By default, your words will be hidden in a field of randomly-selected upper-case letters. To change the characters used for the field, use the `characters` kwarg.
+
+The raw character-array of your wordsearch can be accessed via `Wordsearch.field`.
+
+#### Example output
+
 ```
 |---|---|---|---|---|---|---|---|---|---|
 | U | G | E | N | E | R | A | T | O | R |
