@@ -11,6 +11,7 @@ class PlacementError(Exception):
 
 
 def validate_word_and_field(word, field_width, field_height):
+    """Check if 'word' could be placed in field with given dimensions."""
     word_length = len(word)
     if word_length > field_height or word_length > field_width:
         msg = (f"Word: {word} doesn't fit in field with "
@@ -19,6 +20,7 @@ def validate_word_and_field(word, field_width, field_height):
 
 
 def place_word(word, field):
+    """Place 'word' into 'field' with a random position and orientation."""
     field_height, field_width = field.shape
     validate_word_and_field(word, field_height, field_width)
 
@@ -36,6 +38,7 @@ def place_word(word, field):
 
 
 def fill_field(field, characters):
+    """Fill null elements of 'field' with randomly-selected 'characters'."""
     background = numpy.random.choice([*characters], field.shape)
     null_field_coords = numpy.where(~field.astype(bool))
     field[null_field_coords] = background[null_field_coords]
@@ -43,6 +46,7 @@ def fill_field(field, characters):
 
 
 class Wordsearch:
+    """Wrapper for a wordsearch array."""
 
     DEFAULT_CHARACTERS = "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
 
@@ -52,9 +56,6 @@ class Wordsearch:
         self.height = height
         self.shape = (height, width)
         self.characters = characters
-
-        # TODO: Check word chars are subset of background characters
-        # TODO: Check longest word can fit in grid
 
         self.field = numpy.full(self.shape, None)
         for word in self.words:
@@ -66,6 +67,7 @@ class Wordsearch:
         return row_string
 
     def as_string(self):
+        """Get a text representation of this wordsearch."""
         row_border = "".join(["|-", "--|-" * (self.width - 1), "--|"])
         lines = [row_border]
         for row in [self._row_as_string(row) for row in self.field]:
