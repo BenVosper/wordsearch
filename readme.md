@@ -1,4 +1,4 @@
-## `wordsearch`
+## `wordsearch`  [![CircleCI](https://circleci.com/gh/BenVosper/wordsearch/tree/master.svg?style=shield)](https://circleci.com/gh/BenVosper/wordsearch/tree/master)
 
 Simple wordsearch generator and solver using numpy and regex.
 
