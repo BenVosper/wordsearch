@@ -5,12 +5,13 @@ from unittest.mock import patch
 
 from tests.utils import fix_random_seed
 from wordsearch.wordsearch import (
-    Wordsearch,
+    MAX_PLACEMENT_ATTEMPTS,
+    WordsearchInitialisationError,
+    PlacementError,
     validate_word_and_field,
     place_word,
-    PlacementError,
-    MAX_PLACEMENT_ATTEMPTS,
-    fill_field
+    fill_field,
+    Wordsearch
 )
 
 get_placement = "wordsearch.wordsearch.get_placement"
@@ -58,8 +59,8 @@ def test_fill_field():
 
 
 @fix_random_seed()
-def test_wordsearch():
-    wordsearch = Wordsearch(["FOO", "BAR", "BAZ"], 5, 5)
+def test_generate():
+    wordsearch = Wordsearch.generate(["FOO", "BAR", "BAZ"], 5, 5)
 
     assert wordsearch.field.tolist() == [
         ["R", "A", "B", "O", "Q"],
@@ -82,3 +83,37 @@ def test_wordsearch():
         "| J | L | Q | D | C |",
         "|---|---|---|---|---|"
     ])
+
+
+def test_initialisation():
+    field = numpy.array(
+        [
+            ["A", "B"],
+            ["C", "D"]
+        ],
+        dtype="U1"
+    )
+
+    wordsearch = Wordsearch(field)
+
+    assert (wordsearch.field == field).all()
+
+
+def test_initialisation_ndim_error():
+    field = numpy.ones(shape=(1, 2, 3), dtype="U1")
+
+    with pytest.raises(WordsearchInitialisationError, match="2D array"):
+        Wordsearch(field)
+
+
+def test_initialisation_dtype_error():
+    field = numpy.array(
+        [
+            [1, 2],
+            [3, 4]
+        ],
+        dtype=int
+    )
+
+    with pytest.raises(WordsearchInitialisationError, match="dtype U1"):
+        Wordsearch(field)

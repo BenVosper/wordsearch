@@ -7,7 +7,7 @@ Simple wordsearch generator using numpy.
 ```python
 from wordsearch.wordsearch import Wordsearch
 
-my_wordsearch = Wordsearch(
+my_wordsearch = Wordsearch.generate(
     words=["HIDE", "THESE", "WORDS", "FOR", "ME"],
     width=10,
     height=8

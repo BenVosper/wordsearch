@@ -6,6 +6,10 @@ from wordsearch.placements import get_placement, placement_is_valid
 MAX_PLACEMENT_ATTEMPTS = 10
 
 
+class WordsearchInitialisationError(Exception):
+    pass
+
+
 class PlacementError(Exception):
     pass
 
@@ -50,17 +54,25 @@ class Wordsearch:
 
     DEFAULT_CHARACTERS = "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
 
-    def __init__(self, words, width, height, characters=DEFAULT_CHARACTERS):
-        self.words = words
-        self.width = width
-        self.height = height
-        self.shape = (height, width)
-        self.characters = characters
+    def __init__(self, field):
+        self.field = field
 
-        self.field = numpy.full(self.shape, None)
-        for word in self.words:
-            place_word(word, self.field)
-        fill_field(self.field, self.characters)
+        if self.field.ndim != 2:
+            msg = "Please provide a 2D array"
+            raise WordsearchInitialisationError(msg)
+
+        if not self.field.dtype == "<U1":
+            msg = "Please provide an array of dtype U1"
+            raise WordsearchInitialisationError(msg)
+
+    @classmethod
+    def generate(cls, words, width, height, characters=DEFAULT_CHARACTERS):
+        shape = (height, width)
+        field = numpy.full(shape, None)
+        for word in words:
+            place_word(word, field)
+        field = fill_field(field, characters)
+        return cls(field.astype("U1"))
 
     def _row_as_string(self, row):
         row_string = "| " + " | ".join(row) + " |"
@@ -68,7 +80,8 @@ class Wordsearch:
 
     def as_string(self):
         """Get a text representation of this wordsearch."""
-        row_border = "".join(["|-", "--|-" * (self.width - 1), "--|"])
+        height, width = self.field.shape
+        row_border = "".join(["|-", "--|-" * (width - 1), "--|"])
         lines = [row_border]
         for row in [self._row_as_string(row) for row in self.field]:
             lines.extend([row, row_border])
