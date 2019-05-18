@@ -1,9 +1,10 @@
 import numpy
 import pytest
 
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from tests.utils import fix_random_seed
+from wordsearch.search import WordMatch
 from wordsearch.wordsearch import (
     MAX_PLACEMENT_ATTEMPTS,
     WordsearchInitialisationError,
@@ -117,3 +118,23 @@ def test_initialisation_dtype_error():
 
     with pytest.raises(WordsearchInitialisationError, match="dtype U1"):
         Wordsearch(field)
+
+
+def test_solve():
+    field = numpy.ones((1, 1), "U1")
+    words = ["WORD_ONE", "WORD_TWO"]
+    wordsearch = Wordsearch(field)
+    matches = [
+        WordMatch(word="FOO", start=(0, 0), end=(1, 1)),
+        WordMatch(word="BAR", start=(33, 1), end=(2, 32))
+    ]
+    mock_find_all = Mock(return_value=(match for match in matches))
+
+    with patch("wordsearch.wordsearch.find_all", mock_find_all):
+        found = wordsearch.solve(words)
+
+    assert found == matches
+    assert mock_find_all.call_count == len(words)
+    for call, word in zip(mock_find_all.call_args_list, words):
+        args, _ = call
+        assert args == (word, field)

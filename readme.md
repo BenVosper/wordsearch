@@ -1,8 +1,10 @@
 ## `wordsearch`
 
-Simple wordsearch generator using numpy.
+Simple wordsearch generator and solver using numpy and regex.
 
-#### Usage
+### Usage
+
+#### Wordsearch generation
 
 ```python
 from wordsearch.wordsearch import Wordsearch
@@ -22,7 +24,7 @@ By default, your words will be hidden in a field of randomly-selected upper-case
 
 The raw character-array of your wordsearch can be accessed via `Wordsearch.field`.
 
-#### Example output
+###### Example output
 
 ```
 |---|---|---|---|---|---|---|---|---|---|
@@ -46,4 +48,53 @@ The raw character-array of your wordsearch can be accessed via `Wordsearch.field
 |---|---|---|---|---|---|---|---|---|---|
 | H | C | R | A | E | S | D | R | O | W |
 |---|---|---|---|---|---|---|---|---|---|
+```
+
+
+#### Wordsearch solving
+
+```python
+from numpy import array
+
+from wordsearch.wordsearch import Wordsearch
+
+field = array(
+    [
+        ["C", "H", "Y", "K", "A", "M", "H", "I"],
+        ["R", "E", "V", "E", "N", "I", "I", "W"],
+        ["L", "X", "B", "O", "K", "E", "D", "B"],
+        ["L", "L", "U", "O", "Y", "N", "D", "J"],
+        ["V", "F", "I", "N", "D", "K", "E", "E"],
+        ["C", "Y", "T", "I", "I", "A", "N", "M"],
+        ["L", "K", "E", "M", "C", "Q", "B", "W"],
+        ["B", "D", "U", "F", "B", "D", "M", "G"]
+    ], 
+    dtype="U1"
+)
+my_wordsearch = Wordsearch(field)
+
+solutions = my_wordsearch.solve(
+    ["IM", "HIDDEN", "YOULL", "NEVER", "FIND", "ME"],
+)
+
+print(solutions)
+```
+Instantiate a wordsearch object with the field you'd like to search.
+
+Provided fields must be 2-dimensional arrays of dtype "U1".
+
+Calling the `solve` method with target words provides you with a list of zero or more `WordMatch` objects. Each `WordMatch` is a `namedtuple` containing the found word as well as its position in the field. 
+
+###### Example output
+```python
+[
+    WordMatch(word="IM",     start=(5, 3), end=(6, 3)),
+    WordMatch(word="IM",     start=(1, 5), end=(0, 5)),
+    WordMatch(word="HIDDEN", start=(0, 6), end=(5, 6)),
+    WordMatch(word="YOULL",  start=(3, 4), end=(3, 0)),
+    WordMatch(word="NEVER",  start=(1, 4), end=(1, 0)),
+    WordMatch(word="FIND",   start=(4, 1), end=(4, 4)),
+    WordMatch(word="ME",     start=(6, 3), end=(6, 2)),
+    WordMatch(word="ME",     start=(5, 7), end=(4, 7))
+ ]
 ```

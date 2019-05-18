@@ -1,6 +1,7 @@
 import numpy
 
 from wordsearch.placements import get_placement, placement_is_valid
+from wordsearch.search import find_all
 
 
 MAX_PLACEMENT_ATTEMPTS = 10
@@ -73,6 +74,13 @@ class Wordsearch:
             place_word(word, field)
         field = fill_field(field, characters)
         return cls(field.astype("U1"))
+
+    def solve(self, words):
+        """Get a list of WordMatch objects for found 'words'."""
+        matches = []
+        for word in words:
+            matches.extend(find_all(word, self.field))
+        return matches
 
     def _row_as_string(self, row):
         row_string = "| " + " | ".join(row) + " |"
