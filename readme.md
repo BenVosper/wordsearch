@@ -1,6 +1,16 @@
 ## `wordsearch`  [![CircleCI](https://circleci.com/gh/BenVosper/wordsearch/tree/master.svg?style=shield)](https://circleci.com/gh/BenVosper/wordsearch/tree/master)
 
-Simple wordsearch generator and solver using numpy and regex.
+Simple wordsearch generator and solver using `numpy` and regex.
+
+### Installation
+
+```
+git clone git@github.com:BenVosper/wordsearch.git
+cd wordsearch
+pip install .
+```
+
+This will also install `numpy` if you don't have it in your current environment.
 
 ### Usage
 
